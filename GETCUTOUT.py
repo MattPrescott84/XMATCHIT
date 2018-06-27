@@ -1,12 +1,13 @@
+# --------------------------------------------------------------------------------------------- 
 
-"""
-Code that generates a smaller cutout image from a larger .fits file.
+# This is a script that generates a smaller .fits cutout image from a larger mosciac file.
+# Change the .fits files to the name of your choice and give it a txt file with a list of coordiniates of your sources.
+# This makes small .fits cutouts that can be used to produce overlays using MAKEOVERLAYS.py
 
-Change the .fits files to the name of your choice and give its a file with a list of coordiniates.
+# Requires pyfits and worldpos 
 
-Makes small .fits cutouts that can be used to produce overlays.
+# --------------------------------------------------------------------------------------------- 
 
-"""
 import pyfits
 import os
 import copy
