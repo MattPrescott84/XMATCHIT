@@ -19,8 +19,11 @@ This requires matplotlib and the APLpy package of functions which can be found h
 # XMATCHIT.py
 
  Script for the visual matching and classification of radio sources using overlays produced by MAKEOVERLAY.py.
- In this example it needs two sets of overlays of different size eg. 0.5 x 0.5 arcminutes and 3.0 x 3.0 arcminutes.  
+ In this example it needs two sets of overlays of different size (eg. 0.5 x 0.5 arcminutes and 3.0 x 3.0 arcminutes) placed in a directory.  
  The code prompts the user to classify whether or not radio source components have an optical counterpart, and then prompts the user to classify the radio source morphology (compact, extended, FRI/II etc.) 
-This Produces a file called eyeball_out.dat which contains a list of source classsifications.
-
+ 
+ To run type:
+ python XMATCHIT.py <<dir with overlays>>
+ 
+This produces a file called eyeball_out.dat which contains a list of source IDs and their classsifications.
 
