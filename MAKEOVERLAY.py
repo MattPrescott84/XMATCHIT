@@ -1,10 +1,28 @@
 # --------------------------------------------------------------------------------------------- 
-# Script to make overlay cutouts:
+# Script to make overlay cutouts of radio sources in .png using aplpy. In this case radio contours from two surveys
+# (The VLA Stripe 82 Snapshot Survey, Heywood et al. 2016) and Hodge et al. 2011 (or FIRST) 
+#  are overlayed on top of greyscale SDSS images. 
 #
-#   -- SDSS:          greyscale, red circles for positions, optionally plot index numbers
-#   -- Hodge/FIRST:   blue contour, blue + for positions
-#   -- JVLA Stripe82: green contour, green + for positions
-#   -- DR7 Quasars:   cyan circles for positions, optionally plot index numbers
+# This requires the aplypy python package to run from here https://aplpy.github.io/
+#
+# SDSS images can be obtained from here https://dr14.sdss.org/comingsoon/imaging/field/search 
+# and placed all these in a directory. 
+#
+# VLA images can be produced using GETCUTOUT.py and placed in another directory
+#
+# Hodge et al. 2011 radio (or FIRST) images are downloaded on the fly from here:
+# http://third.ucllnl.org/cgi-bin/stripe82image
+#
+# An ascii file containing the ID, RA and DEC and SDSSIMAGEfilename will be needed 
+# as well as .vot tables containing the positions of the sources you want to plot.  
+#
+# To run do :python MAKEOVERLAY.py  
+#
+# The overlays should comprise of:
+#   -- SDSS images            greyscale, red circles for positions, optionally plot index numbers
+#   -- Hodge/FIRST contours:          blue contour, blue + for positions
+#   -- VLA Stripe82 contours:         green contour, green + for positions
+#   -- Spectroscopic objects:   cyan circles for positions, optionally plot index numbers
 #
 # --------------------------------------------------------------------------------------------- 
 
@@ -33,44 +51,47 @@ logging.captureWarnings(True)
 # Numer of processes to parallelise over
 NPROCESSES = 0             # integer. set this to zero if you don't want to use multiprocessing
 
-# base directory
-BASEDIR = '/data2/matt/Overlaycode'
+# Base directory
+BASEDIR = '/Your/Directory/Overlaycode'
 
-# source positions
-POSNSFILE = 'JVLAsdssfilenameWEST.dat'
+# Source positions 
+# POSNSFILE needs to be a list of objects with columns in the format ID, RA, DEC, SDSS IMAGE NAME
+# i.e J005905.57+000651.14  14.77320   0.11420  fpc-100006-r4-0500.fit
+POSNSFILE = 'YOURPOSNSFILE.dat'
 posfile = '{0}/{1}'.format(BASEDIR,POSNSFILE)
 
-# FITS file locations
-SDSS_DIR = '/data2/matt/attempt_2_unnested'
-JVLA_DIR = '/data2/matt/JVLAcutouts/Westcutoutslarger'
+# FITS file locations for the SDSS images and the radio images. Radio images are make using GETCUTOUTS.py
+SDSS_DIR = '/DIRECTORY/CONTAINING/SDSSIMAGES/'
+JVLA_DIR = '/DIRECTORY/CONTAINING/VLACUTOUTS/'
 
-# catalogue files
-CATALOGUE1 = 'Hodge.vot'
-CATALOGUE2 = 'West.vot'
-CATALOGUE3 = 'MATCHESWITHIN40.vot'
-CATALOGUE4 = 'DR7QuasarsBEST.vot'
+# Catalogue files, RA and DEC for each catalogue in .vot format. Catalogue 1 contains the Hodge data. 
+# Catalogue 2. Catalogue 3. The SDSS photometric positions and Catalogue 4. contains Spectroscopic positions.  
+CATALOGUE1 = 'HodgeCat.vot'
+CATALOGUE2 = 'VLACat.vot'
+CATALOGUE3 = 'PhotCatalogue.vot'
+CATALOGUE4 = 'SpecCAT.vot'
 
 # suffix for the files names (if desired)
 SUFFIX = ''
 
-# cutout sizes
+# Specifiy the cutout sizes
 CUTOUTSIZE = 1.0           # arcminutes
 CUTOUTSIZEVLA = 3.0        # Needs to be about 2 arcminutes bigger than CUTOUTSIZE                            
 CUTOUTSIZE_DEG = CUTOUTSIZE/60.
 
-# SDSS circle and index name parameters
+# SDSS photometric catalogue marker circle and index name parameters
 SDSS_CIRCLE = 1.0          # arcseconds 
 SDSS_INDEX = True          # display index names?
 SDSS_OFFSET = 4.3          # offset of index names from positions  
 SDSS_CIRCLE_DEG = SDSS_CIRCLE/60./60.
 SDSS_OFFSET_DEG = SDSS_OFFSET/60./60.
 
-# Quasar circle parameters
-QUASAR_CIRCLE = 1.4        # arcseconds 
-QUASAR_INDEX = True        # display index names?
-QUASAR_OFFSET = 3.8        # offset of index names from positions  
-QUASAR_CIRCLE_DEG = QUASAR_CIRCLE/60./60.
-QUASAR_OFFSET_DEG = QUASAR_OFFSET/60./60.
+# SpecCAT marker circle parameters
+SPEC_CIRCLE = 1.4        # arcseconds 
+SPEC_INDEX = True        # display index names?
+SPEC_OFFSET = 3.8        # offset of index names from positions  
+SPEC_CIRCLE_DEG = SPEC_CIRCLE/60./60.
+SPEC_OFFSET_DEG = SPEC_OFFSET/60./60.
 
 # --------------------------------------------------------------------------------------------- 
 # Functions
@@ -152,7 +173,8 @@ def make_cutout(target_parameters):
 	# set up figure
 	fig = plt.figure(figsize=(14, 14))
 
-	# ---------------------------------------------------------------------------------------------
+	# ---------------------------------------------------------------------------------------------	
+	
 	# sdss greyscale
 	sdss_fitsfile = '{0}/{1}'.format(SDSS_DIR,field)
 
@@ -162,9 +184,9 @@ def make_cutout(target_parameters):
 	f.set_title(target_name)
 
 	# ---------------------------------------------------------------------------------------------
-	# Hodge/FIRST contour 
+	# Make Hodge/FIRST contour 
 
-	# download fits file  
+	# Download fits file from the internet 
 	#  - first try Hodge, then FIRST if Hodges is not available
 	hodge_file, first_file = False, False
 
@@ -211,7 +233,7 @@ def make_cutout(target_parameters):
 	os.system('rm {0}'.format(fitsfile,))
 
 	# ---------------------------------------------------------------------------------------------
-	# JVLA contour
+	# Make VLA contour
 	vla_fitsfile = '{0}/{1}.fits'.format(JVLA_DIR,target_name)
 
 	f.recenter(ra, dec, radius=CUTOUTSIZE/60.)  # radius is in degrees
@@ -253,22 +275,22 @@ def make_cutout(target_parameters):
 	        f.add_label(ri+SDSS_OFFSET_DEG,di,index,color='r',size=12)
 
 	# ---------------------------------------------------------------------------------------------
-	# catalogue 4 - Quasar source circles
+	# catalogue 4 - SpecCat source circles
 
-	cutout_mask = (np.abs(r_quasar-ra)<CUTOUTSIZE_DEG)&(np.abs(d_quasar-dec)<CUTOUTSIZE_DEG)
+	cutout_mask = (np.abs(r_spec-ra)<CUTOUTSIZE_DEG)&(np.abs(d_spec-dec)<CUTOUTSIZE_DEG)
 
-	r_cutout = r_quasar[cutout_mask]
-	d_cutout = d_quasar[cutout_mask]
+	r_cutout = r_spec[cutout_mask]
+	d_cutout = d_spec[cutout_mask]
 
-	# if there are quasars in this cutout, plot them
+	# if there are spectroscopic sources in this cutout, plot them
 	if len(r_cutout) > 0:
-	    s = np.ones(len(r_cutout))*QUASAR_CIRCLE_DEG
+	    s = np.ones(len(r_cutout))*SPEC_CIRCLE_DEG
 	    f.show_circles(r_cutout,d_cutout,s,edgecolor='c')
 
-	    if QUASAR_INDEX:
-	        indices = index_quasar[cutout_mask]
+	    if SPEC_INDEX:
+	        indices = index_spec[cutout_mask]
 	        for ri, di, index in zip(r_cutout, d_cutout,indices):
-	            f.add_label(ri,di+QUASAR_OFFSET_DEG,index,color='c',size=12)
+	            f.add_label(ri,di+SPEC_OFFSET_DEG,index,color='c',size=12)
 
 	# ---------------------------------------------------------------------------------------------
 
@@ -280,34 +302,34 @@ def make_cutout(target_parameters):
 # ---------------------------------------------------------------------------------------------                            
 # parse vot files
 
-# catalogue 1 - Hodge source locations
+# catalogue 1 - Hodge et al. source locations
 cat = parse('{0}/{1}'.format(BASEDIR,CATALOGUE1))
 table = cat.get_first_table()
 r_hodge = table.array['RA']
 d_hodge = table.array['DEC']
 
-# catalogue 2 - JVLA source locations
+# catalogue 2 - VLA source locations
 cat = parse('{0}/{1}'.format(BASEDIR,CATALOGUE2))
 table = cat.get_first_table()
 r_vla = table.array['RA']
 d_vla = table.array['DEC']
 
-# catalogue 3 - SDSS source circles
+# catalogue 3 - SDSS photometric source circles
 cat = parse('{0}/{1}'.format(BASEDIR,CATALOGUE3))
 table = cat.get_first_table()
 r_sdss = table.array['RA']
 d_sdss = table.array['DEC']
 index_sdss = table.array['INDEX']
 
-# catalogue 4 - Quasar source circles
+# catalogue 4 - Spectroscopic source circles
 cat = parse('{0}/{1}'.format(BASEDIR,CATALOGUE4))
 table = cat.get_first_table()
-r_quasar = table.array['RA']
-d_quasar = table.array['DEC']
-index_quasar = table.array['INDEX']
+r_spec = table.array['RA']
+d_spec = table.array['DEC']
+index_spec = table.array['INDEX']
 
 # ---------------------------------------------------------------------------------------------
-# set image download parameters
+# Set Image download parameters
 HODGE_URL = 'http://third.ucllnl.org/cgi-bin/stripe82image'
 FIRST_URL = 'http://third.ucllnl.org/cgi-bin/firstimage'
 
