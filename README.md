@@ -11,8 +11,9 @@ This repository contains code to make overlays for radio/optical surveys, and co
 
 # MAKEOVERLAY.py
 
-This script can be used to make overlays of radio sources in .png format. 
-In this example radio contours from two radio surveys (The VLA Stripe 82 Snapshot Survey, Heywood et al. 2016, http://adsabs.harvard.edu/abs/2016MNRAS.460.4433H) and Hodge et al. 2011 (or FIRST) are overlayed on top of greyscale SDSS images. 
+This script can be used to make overlays of radio sources in .png format, like the image below.  
+
+In this example radio contours from two radio surveys: The VLA Stripe 82 Snapshot Survey, Heywood et al. 2016, http://adsabs.harvard.edu/abs/2016MNRAS.460.4433H (green contour) and Hodge et al. 2011 (blue contours) are overlayed on top of greyscale SDSS images. 
 
 ![alt text](https://github.com/MattPrescottAstro/XMATCHIT/blob/master/EXAMPLE.jpg)
 
@@ -25,7 +26,7 @@ This requires matplotlib and the APLpy package of functions which can be found h
  The script prompts the user to classify whether or not radio source components have an optical counterpart, and then prompts the user to classify the radio source morphology (compact, extended, FRI/II etc.) 
  
  To run type:
- python XMATCHIT.py <<dir with overlays>>
+ python XMATCHIT.py /dir/containing/overlays
  
 This produces a file called eyeball_out.dat which contains a list of source IDs and their classsifications.
 
