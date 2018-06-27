@@ -1,12 +1,16 @@
 
 #============================================
-# Script for eyeballing overlays
-
-#To run type:
-#  python XMATCHIT.py <<dir with overlays>>
-#or
+# Script for visually matching and classifying overlays produced by MAKEOVERLAY.py.
+# In this case it needs two sets of overlays made with different sizes.  
+# The code prompts the user to classify the images if they have an optical counterpart, 
+# then prompts the user if so wh
+# Produces a file called eyeball_out.dat which contains your classsifications.
+#
+# To run type:
+#   python XMATCHIT.py <<dir with overlays>>
+# or
 #  python XMATCHIT.py -l <<list of object names (J...)>> <<dir with overlays>>
-#Script assumes overlay images files are named J.....png and J....ZOOMED.png
+# Script assumes overlay images files are named J.....png and J....ZOOMED.png
 
 #To recover from a crash use:
 #  python XMATCHIT.py -r
