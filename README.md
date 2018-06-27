@@ -14,7 +14,7 @@ This repository contains code to make overlays for radio/optical surveys, and co
 This script can be used to make overlays of radio sources in .png format. 
 In this example radio contours from two radio surveys (The VLA Stripe 82 Snapshot Survey, Heywood et al. 2016, http://adsabs.harvard.edu/abs/2016MNRAS.460.4433H) and Hodge et al. 2011 (or FIRST) are overlayed on top of greyscale SDSS images. 
 
-![alt text](http:/https://github.com/MattPrescottAstro/XMATCHIT/blob/master/EXAMPLE.jpg)
+![alt text](https://github.com/MattPrescottAstro/XMATCHIT/blob/master/EXAMPLE.jpg)
 
 This requires matplotlib and the APLpy package of functions which can be found here: https://aplpy.github.io
 
